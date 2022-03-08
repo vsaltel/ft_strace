@@ -1,0 +1,5 @@
+*.swp
+objs
+libft.a
+ft_strace
+send.sh

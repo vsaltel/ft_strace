@@ -4,12 +4,13 @@
 # include <sys/wait.h>
 # include <sys/ptrace.h>
 # include <sys/uio.h>
+# include <sys/user.h>
+# include <sys/types.h>
 # include <elf.h>
 # include <signal.h>
 # include <errno.h>
 # include <stdio.h>
-# include <sys/user.h>
-
+# include <fcntl.h>
 # include "libft.h"
 
 typedef struct s_reg32
@@ -29,10 +30,11 @@ typedef struct s_trace
 	char	**args;
 	char	**env;
 	int		pid;
+	int		ppid;
 	struct iovec	iov;
 	struct user_regs_struct regs;
 	int		ret;
-	int		ready;
+	char	*stack_file;
 }				t_trace;
 
 extern t_trace trace;
@@ -40,6 +42,7 @@ extern t_trace trace;
 /*	strace_utils.c */
 void	init_trace(t_trace *trace, int argc, char **argv, char **env);
 void	catch_sigint(int signal);
+char	*get_stack_file(t_trace *trace);
 
 /*	program.c */
 int		launch_prog(t_trace *trace);

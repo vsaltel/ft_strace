@@ -1,10 +1,21 @@
 #ifndef SYSCALL_NAME_H
 # define SYSCALL_NAME_H
 
+enum					e_type
+{
+	TNONE = 0,
+	TINT = 1,
+	TUINT = 2,
+	TSTR = 3,
+	TPTR = 4,
+	TSTRUCT = 5,
+};
+
 typedef struct			s_syscall
 {
 	int					code;
 	char				*name;
+	enum e_type			arg[6];
 }						t_syscall;
 
 static const t_syscall	g_syscall[] =

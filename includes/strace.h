@@ -13,6 +13,8 @@
 # include <fcntl.h>
 # include "libft.h"
 
+# include "syscall.h"
+
 typedef struct s_reg32
 {
 	uint32_t		ebx, ecx, edx, esi, edi, ebp, eax;
@@ -35,6 +37,7 @@ typedef struct s_trace
 	struct user_regs_struct regs;
 	int		ret;
 	char	*stack_file;
+	t_syscall	sys;
 }				t_trace;
 
 extern t_trace trace;
@@ -43,6 +46,7 @@ extern t_trace trace;
 void	init_trace(t_trace *trace, int argc, char **argv, char **env);
 void	catch_sigint(int signal);
 char	*get_stack_file(t_trace *trace);
+t_syscall	get_syscall(t_trace *trace);
 
 /*	program.c */
 int		launch_prog(t_trace *trace);
@@ -51,6 +55,8 @@ int		launch_prog(t_trace *trace);
 int		tracing(t_trace *trace);
 
 /*	display.c */
+int		display_args(enum e_type type, uint64_t reg, int space);
+void	display_ret_syscall(enum e_type type, uint64_t reg);
 void	display_syscall(t_trace *trace);
 
 #endif

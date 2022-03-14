@@ -1,36 +1,19 @@
 #include "strace.h"
 
-static void check_memory(t_trace *trace, int action)
+static int get_memory(t_trace *trace)
 {
 	int	ptrace_ret;
-	//int		fd;
-	//long	tmp;
 
 	ft_memset(&trace->regs, 0, sizeof(trace->regs));
 	trace->iov.iov_len = sizeof(trace->regs);
 	trace->iov.iov_base = &(trace->regs);
 	ptrace_ret = ptrace(PTRACE_GETREGSET, trace->pid, NT_PRSTATUS, &(trace->iov));
 	if (ptrace_ret == -1)
-		perror("getregset");
-	if (action)
-		display_syscall(trace);
-	else if (!ptrace_ret)
-		ft_printf(") = %ld\n", trace->regs.rax);
-	else
-		ft_printf(") = ?\n");
-	/*
-	if ((fd = open(trace->stack_file, O_RDONLY)) > 0)
 	{
-		lseek(fd, trace->regs.rsp - (sizeof(tmp) * 3), SEEK_SET);
-		read(fd, &tmp, sizeof(tmp));
-		ft_printf(" 0x%lx", tmp);
-		read(fd, &tmp, sizeof(tmp));
-		ft_printf(" 0x%lx", tmp);
-		read(fd, &tmp, sizeof(tmp));
-		ft_printf(" 0x%lx", tmp);
-		close(fd);
+		perror("getregset");
+		return (1);
 	}
-	*/
+	return (0);
 }
 
 static int	next_syscall(t_trace *trace, int action)
@@ -43,8 +26,9 @@ static int	next_syscall(t_trace *trace, int action)
 	}
 	if (WIFEXITED(trace->ret) || WIFSIGNALED(trace->ret))
 	{
-		if (!action)
-		ft_printf("exiting\n");
+		if (!action && !ft_strcmp(trace->sys.name, "exit_group"))
+			ft_printf(") = ?\n");
+		ft_printf("+++ exited +++\n");
 		return (1);
 	}
 	/*
@@ -57,6 +41,7 @@ static int	next_syscall(t_trace *trace, int action)
 int	tracing(t_trace *trace)
 {
 	int	ret;
+
 	ptrace(PTRACE_SEIZE, trace->pid, NULL, NULL);
 	ptrace(PTRACE_INTERRUPT, trace->pid, NULL, NULL);
 	get_stack_file(trace);
@@ -70,11 +55,14 @@ int	tracing(t_trace *trace)
 		ret = next_syscall(trace, 1);
 		if (ret > 0)
 			return (ret == 1 ? 0 : ret);
-		check_memory(trace, 1);
+		get_memory(trace);
+		trace->sys = get_syscall(trace);
+		display_syscall(trace);
 		ret = next_syscall(trace, 0);
 		if (ret > 0)
 			return (ret == 1 ? 0 : ret);
-		check_memory(trace, 0);
+		if (!get_memory(trace))
+			display_ret_syscall(trace->sys.ret, trace->regs.rax);
 	}
 	return (0);
 }

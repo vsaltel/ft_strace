@@ -34,3 +34,19 @@ char	*get_stack_file(t_trace *trace)
 	trace->stack_file = str;
 	return (str);
 }
+
+t_syscall get_syscall(t_trace *trace)
+{
+	int			i = -1;
+	t_syscall	sys;
+
+	while (g_syscall[++i].name)
+	{
+		if (trace->regs.orig_rax == (long long unsigned int)g_syscall[i].code || !g_syscall[i].name)
+		{
+			sys = g_syscall[i];
+			break;
+		}
+	}
+	return (sys);
+}

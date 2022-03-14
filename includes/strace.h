@@ -50,4 +50,7 @@ int		launch_prog(t_trace *trace);
 /*	trace.c */
 int		tracing(t_trace *trace);
 
+/*	display.c */
+void	display_syscall(t_trace *trace);
+
 #endif

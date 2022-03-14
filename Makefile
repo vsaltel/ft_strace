@@ -18,6 +18,7 @@ OBJDIR	=	objs
 FILES	=	main.c			\
 			strace_utils.c	\
 			trace.c			\
+			display.c		\
 			program.c
 
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))

@@ -28,7 +28,7 @@ static int	next_syscall(t_trace *trace, int action)
 	{
 		if (!action && !ft_strcmp(trace->sys.name, "exit_group"))
 			ft_printf(") = ?\n");
-		ft_printf("+++ exited +++\n");
+		ft_printf("+++ exited with %d +++\n", WEXITSTATUS(trace->ret));
 		return (1);
 	}
 	/*

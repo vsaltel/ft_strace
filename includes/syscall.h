@@ -2,7 +2,6 @@
 # define SYSCALL_H
 
 # define NB_SYSCALL 328
-# define NB_ARGS 6
 
 enum					e_type
 {
@@ -10,7 +9,8 @@ enum					e_type
 	TINT = 1,
 	TUINT = 2,
 	TSTR = 3,
-	TPTR = 4,
+	TLSTR = 4,
+	TPTR = 5,
 };
 
 typedef struct			s_syscall
@@ -39,10 +39,10 @@ static const t_syscall	g_syscall[] =
 	{ 8, "lseek", TINT, TINT, TUINT, TNONE, TNONE, TNONE, TINT},
 	{ 9, "mmap", TPTR, TUINT, TUINT, TUINT, TUINT, TUINT, TPTR},
 	{ 10, "mprotect", TPTR, TUINT, TUINT, TNONE, TNONE, TNONE, TINT},
-	{ 11, "munmap", TUINT, TUINT, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 11, "munmap", TPTR, TUINT, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 12, "brk", TUINT, TNONE, TNONE, TNONE, TNONE, TNONE, TPTR},
-	{ 13, "rt_sigaction", TINT, TPTR, TSTR, TUINT, TNONE, TNONE, TINT},
-	{ 14, "rt_sigprocmask", TINT, TSTR, TSTR, TUINT, TNONE, TNONE, TINT},
+	{ 13, "rt_sigaction", TINT, TPTR, TPTR, TUINT, TNONE, TNONE, TINT},
+	{ 14, "rt_sigprocmask", TINT, TSTR, TPTR, TUINT, TNONE, TNONE, TINT},
 	{ 15, "rt_sigreturn", TUINT, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 16, "ioctl", TUINT, TUINT, TUINT, TNONE, TNONE, TNONE, TINT},
 	{ 17, "pread64", TUINT, TSTR, TUINT, TUINT, TNONE, TNONE, TINT},
@@ -87,7 +87,7 @@ static const t_syscall	g_syscall[] =
 	{ 56, "clone", TUINT, TUINT, TPTR, TPTR, TNONE, TNONE, TINT},
 	{ 57, "fork", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 58, "vfork", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
-	{ 59, "execve", TSTR, TPTR, TPTR, TNONE, TNONE, TNONE, TINT},
+	{ 59, "execve", TSTR, TLSTR, TLSTR, TNONE, TNONE, TNONE, TINT},
 	{ 60, "exit", TINT, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 61, "wait4", TUINT, TPTR, TINT, TPTR, TNONE, TNONE, TINT},
 	{ 62, "kill", TUINT, TINT, TNONE, TNONE, TNONE, TNONE, TINT},
@@ -350,7 +350,7 @@ static const t_syscall	g_syscall[] =
 	{ 319, "memfd", TSTR, TUINT, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 320, "kexec", TINT, TINT, TUINT, TSTR, TUINT, TNONE, TINT},
 	{ 321, "bpf", TINT, TPTR, TUINT, TNONE, TNONE, TNONE, TINT},
-	{ 322, "execveat", TINT, TSTR, TPTR, TPTR, TINT, TNONE, TINT},
+	{ 322, "execveat", TINT, TSTR, TLSTR, TLSTR, TINT, TNONE, TINT},
 	{ 323, "userfaultfd", TINT, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 324, "membarrier", TINT, TINT, TNONE, TNONE, TNONE, TNONE, TINT},
 	{ 325, "mlock2", TUINT, TUINT, TINT, TNONE, TNONE, TNONE, TINT},

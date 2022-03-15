@@ -1,5 +1,86 @@
 #include "strace.h"
 
+static void	print_escaped_str(char *str)
+{
+	char	buf[BUFF_SIZE];
+	int		i = -1;
+	int		y = 0;
+	int		len = 32;
+
+	if (trace.sys.code == 1)
+		len = (int)trace.regs.rdx;
+	while (str[++i] && i < len)
+	{
+		if (str[i] >= 0x07 && str[i] <= 0x0d)
+			buf[y++] = '\\';
+		if (str[i] == 0x07)
+			buf[y] = 'a';
+		else if (str[i] == 0x08)
+			buf[y] = 'b';
+		else if (str[i] == 0x09)
+			buf[y] = 't';
+		else if (str[i] == 0x0a)
+			buf[y] = 'n';
+		else if (str[i] == 0x0b)
+			buf[y] = 'v';
+		else if (str[i] == 0x0c)
+			buf[y] = 'f';
+		else if (str[i] == 0x0d)
+			buf[y] = 'r';
+		else if (ft_isprint(str[i]))
+			buf[y] = str[i];
+		else
+			break;
+		y++;
+	}
+	buf[y] = '\0';
+	if (i >= 32)
+		ft_printf("\"%s\"...", buf);
+	else
+		ft_printf("\"%s\"", buf);
+}
+
+void	display_str_reg(t_trace *trace, uint64_t reg)
+{
+	char			buf[BUFF_SIZE];
+	unsigned long	ret;
+	unsigned long	*tmp;
+	unsigned int	i = 0;
+
+	ft_bzero(buf, BUFF_SIZE);
+	tmp = (unsigned long *)buf;
+	while (i < 5)
+	{
+		ret = ptrace(PTRACE_PEEKDATA, trace->pid, reg + (i * 8), NULL);
+		*tmp = ret;
+		i++;
+		tmp = (unsigned long *)(buf + (i * 8));
+	}
+	print_escaped_str(buf);
+}
+
+void	display_lstr_reg(t_trace *trace, uint64_t reg)
+{
+	unsigned int	i = 0;
+	unsigned long	ret = 1;
+
+	while (ret)
+	{
+		ret = ptrace(PTRACE_PEEKDATA, trace->pid, reg + (i * 8), NULL);
+		if (ret)
+		{
+			if (!i)
+				write(1, "[", 1);
+			else
+				write(1, ", ", 2);
+			display_str_reg(trace, ret);
+			i++;
+		}
+	}
+	if (i)
+		write(1, "]", 1);
+}
+
 int		display_args(enum e_type type, uint64_t reg, int space)
 {
 	//int		fd;
@@ -20,21 +101,11 @@ int		display_args(enum e_type type, uint64_t reg, int space)
 			ft_printf("%#lp", reg);
 	}
 	else if (type == TSTR)
-		ft_printf("%#lp", reg);
+		display_str_reg(&trace, reg);
+	else if (type == TLSTR)
+		display_lstr_reg(&trace, reg);
 	return (0);
-	/*
-	if ((fd = open(trace->stack_file, O_RDONLY)) > 0)
-	{
-		lseek(fd, trace->regs.rsp - (sizeof(tmp) * 3), SEEK_SET);
-		read(fd, &tmp, sizeof(tmp));
-		ft_printf(" 0x%lx", tmp);
-		read(fd, &tmp, sizeof(tmp));
-		ft_printf(" 0x%lx", tmp);
-		read(fd, &tmp, sizeof(tmp));
-		ft_printf(" 0x%lx", tmp);
-		close(fd);
-	}
-	*/
+	
 }
 
 void	display_syscall(t_trace *trace)

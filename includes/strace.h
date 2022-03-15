@@ -58,5 +58,6 @@ int		tracing(t_trace *trace);
 int		display_args(enum e_type type, uint64_t reg, int space);
 void	display_ret_syscall(enum e_type type, uint64_t reg);
 void	display_syscall(t_trace *trace);
+void	display_str_reg(t_trace *trace, uint64_t reg);
 
 #endif

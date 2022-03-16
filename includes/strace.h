@@ -36,17 +36,20 @@ typedef struct s_trace
 	struct iovec	iov;
 	struct user_regs_struct regs;
 	int		ret;
+	int		delivery_sig;
 	char	*stack_file;
 	t_syscall	sys;
+	sigset_t	new;
+	sigset_t	old;
 }				t_trace;
 
 extern t_trace trace;
 
 /*	strace_utils.c */
 void	init_trace(t_trace *trace, int argc, char **argv, char **env);
-void	catch_sigint(int signal);
 char	*get_stack_file(t_trace *trace);
 t_syscall	get_syscall(t_trace *trace);
+void	free_trace(t_trace *trace);
 
 /*	program.c */
 int		launch_prog(t_trace *trace);
@@ -59,5 +62,14 @@ int		display_args(enum e_type type, uint64_t reg, int space);
 void	display_ret_syscall(enum e_type type, uint64_t reg);
 void	display_syscall(t_trace *trace);
 void	display_str_reg(t_trace *trace, uint64_t reg);
+
+/*	get_path.c */
+char	*get_path(t_trace *trace);
+
+/*	signal.c */
+int		check_child_state(t_trace *trace, int action);
+void	catch_sigint(int signal);
+int		wait_child(t_trace *trace);
+void	init_block_sig(t_trace *trace);
 
 #endif

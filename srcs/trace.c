@@ -18,23 +18,16 @@ static int get_memory(t_trace *trace)
 
 static int	next_syscall(t_trace *trace, int action)
 {
-	ptrace(PTRACE_SYSCALL, trace->pid, NULL, NULL);
-	if (waitpid(trace->pid, &trace->ret, WUNTRACED) == -1)
-	{
-		ft_dprintf(2, "ft_strace: waitpid fail\n");
+	int	ret = 0;
+
+	ptrace(PTRACE_SYSCALL, trace->pid, NULL, trace->delivery_sig);
+	trace->delivery_sig = 0;
+	if (wait_child(trace))
 		return (3);
-	}
-	if (WIFEXITED(trace->ret) || WIFSIGNALED(trace->ret))
-	{
-		if (!action && !ft_strcmp(trace->sys.name, "exit_group"))
-			ft_printf(") = ?\n");
-		ft_printf("+++ exited with %d +++\n", WEXITSTATUS(trace->ret));
+	if (!(ret = check_child_state(trace, action)))
+		break;
+	if (ret == 1)
 		return (1);
-	}
-	/*
-	else if (WIFSTOPPED(trace->ret))
-		ft_printf("sig : %d\n", WSTOPSIG(trace->ret));
-	*/
 	return (0);
 }
 
@@ -42,14 +35,6 @@ int	tracing(t_trace *trace)
 {
 	int	ret;
 
-	ptrace(PTRACE_SEIZE, trace->pid, NULL, NULL);
-	ptrace(PTRACE_INTERRUPT, trace->pid, NULL, NULL);
-	get_stack_file(trace);
-	if (waitpid(trace->pid, &trace->ret, WUNTRACED) == -1)
-	{
-		ft_dprintf(2, "ft_strace: waitpid fail\n");
-		return (3);
-	}
 	while (1)
 	{
 		ret = next_syscall(trace, 1);

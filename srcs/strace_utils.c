@@ -7,18 +7,20 @@ void	init_trace(t_trace *trace, int argc, char **argv, char **env)
 	trace->env = NULL;
 	trace->pid = 0;
 	trace->ret = 0;
+	trace->delivery_sig = 0;
 	if (argc > 1)
 	{
-		trace->name = argv[1];
+		trace->name = ft_strdup(argv[1]);
 		trace->args = &argv[1];
 	}
 	if (env)
 		trace->env = env;
 }
 
-void	catch_sigint(int signal)
+void	free_trace(t_trace *trace)
 {
-	kill(trace.pid, signal);
+	if (trace->name)
+		free(trace->name);
 }
 
 char	*get_stack_file(t_trace *trace)

@@ -7,7 +7,8 @@ static void	print_escaped_str(char *str)
 	int		y = 0;
 	int		len = 32;
 
-	if (trace.sys.code == 1)
+	if (trace.sys.code == 1 &&
+		trace.regs.rdx < (unsigned int)len && (int)trace.regs.rdx > 0)
 		len = (int)trace.regs.rdx;
 	while (str[++i] && i < len)
 	{
@@ -62,11 +63,14 @@ void	display_str_reg(t_trace *trace, uint64_t reg)
 void	display_lstr_reg(t_trace *trace, uint64_t reg)
 {
 	unsigned int	i = 0;
+	unsigned int	count = 0;
 	unsigned long	ret = 1;
 
-	while (ret)
+	while (ret && count < 10)
 	{
 		ret = ptrace(PTRACE_PEEKDATA, trace->pid, reg + (i * 8), NULL);
+		if (++count == 10)
+			break;
 		if (ret)
 		{
 			if (!i)
@@ -77,6 +81,8 @@ void	display_lstr_reg(t_trace *trace, uint64_t reg)
 			i++;
 		}
 	}
+	if (count == 10)
+		write(1, "...", 3);
 	if (i)
 		write(1, "]", 1);
 }

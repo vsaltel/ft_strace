@@ -12,6 +12,9 @@ int	main(int argc, char **argv, char **env)
 		return (0);
 	}
 	init_trace(&trace, argc, argv, env);
+	if (!get_path(&trace))
+		return (1);
 	ret = launch_prog(&trace);
+	free_trace(&trace);
 	return (ret);
 }

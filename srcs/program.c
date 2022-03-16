@@ -1,5 +1,22 @@
 #include "strace.h"
 
+static int	init_tracing(t_trace *trace)
+{
+	signal(SIGINT, &catch_sigint);
+	ptrace(PTRACE_SEIZE, trace->pid, NULL, NULL);
+	ptrace(PTRACE_INTERRUPT, trace->pid, NULL, NULL);
+	get_stack_file(trace);
+	init_block_sig(trace);
+	if (waitpid(trace->pid, &trace->ret, WUNTRACED) == -1)
+	{
+		ft_dprintf(2, "ft_strace: waitpid fail\n");
+		return (3);
+	}
+	if (check_child_state(trace, 1) == 1)
+		return (1);
+	return (0);
+}
+
 int	launch_prog(t_trace *trace)
 {
 	int	ret = 0, fd = -1;
@@ -13,7 +30,8 @@ int	launch_prog(t_trace *trace)
 	}
 	else if (trace->pid > 0) //parent
 	{
-		signal(SIGINT, &catch_sigint);
+		if ((ret = init_tracing(trace)))
+			return (ret);
 		ret = tracing(trace);
 	}
 	else //son

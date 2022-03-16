@@ -18,6 +18,8 @@ OBJDIR	=	objs
 FILES	=	main.c			\
 			strace_utils.c	\
 			trace.c			\
+			get_path.c		\
+			signal.c		\
 			display.c		\
 			program.c
 

@@ -15,12 +15,13 @@ SRCDIR	=	srcs
 INCDIR	=	includes
 OBJDIR	=	objs
 
-FILES	=	main.c			\
-			strace_utils.c	\
-			trace.c			\
-			get_path.c		\
-			signal.c		\
-			display.c		\
+FILES	=	main.c				\
+			strace_utils.c		\
+			trace.c				\
+			get_path.c			\
+			summary_display.c	\
+			signal.c			\
+			display.c			\
 			program.c
 
 SRCS	=	$(addprefix $(SRCDIR)/, $(FILES))

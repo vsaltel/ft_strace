@@ -28,6 +28,7 @@ typedef struct s_reg32
 
 typedef struct s_trace
 {
+	int		c;
 	char	*name;
 	char	**args;
 	char	**env;
@@ -71,5 +72,9 @@ int		check_child_state(t_trace *trace, int action);
 void	catch_sigint(int signal);
 int		wait_child(t_trace *trace);
 void	init_block_sig(t_trace *trace);
+
+/*	display_summary.c */
+void	display_summary(t_trace *trace);
+void	update_summary(t_trace *trace);
 
 #endif

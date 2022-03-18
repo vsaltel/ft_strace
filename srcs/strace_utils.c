@@ -7,9 +7,15 @@ void	init_trace(t_trace *trace, int argc, char **argv, char **env)
 	trace->env = NULL;
 	trace->pid = 0;
 	trace->ret = 0;
+	trace->c = 0;
 	trace->delivery_sig = 0;
 	if (argc > 1)
 	{
+		if (!ft_strcmp(argv[1], "-c"))
+		{
+			trace->c = 1;
+			argv++;
+		}
 		trace->name = ft_strdup(argv[1]);
 		trace->args = &argv[1];
 	}

@@ -28,7 +28,7 @@ int	launch_prog(t_trace *trace)
 		ft_dprintf(2, "ft_strace: fork fail\n");
 		ret = 1;
 	}
-	else if (trace->pid > 0) //parent
+	else if (trace->pid > 0)
 	{
 		if ((ret = init_tracing(trace)))
 			return (ret);

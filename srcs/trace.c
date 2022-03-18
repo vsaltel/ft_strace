@@ -40,17 +40,21 @@ int	tracing(t_trace *trace)
 
 	while (1)
 	{
-		ret = next_syscall(trace, 1);
-		if (ret > 0)
-			return (ret == 1 ? 0 : ret);
+		if ((ret = next_syscall(trace, 1)))
+			break ;
 		get_memory(trace);
 		trace->sys = get_syscall(trace);
-		display_syscall(trace);
-		ret = next_syscall(trace, 0);
-		if (ret > 0)
-			return (ret == 1 ? 0 : ret);
-		if (!get_memory(trace))
+		if (!trace->c)
+			display_syscall(trace);
+		if ((ret = next_syscall(trace, 0)))
+			break ;
+		get_memory(trace);
+		if (!trace->c)
 			display_ret_syscall(trace->sys.ret, trace->regs.rax);
+		else
+			update_summary(trace);
 	}
+	if (trace->c)
+		display_summary(trace);
 	return (0);
 }

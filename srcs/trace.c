@@ -20,14 +20,17 @@ static int	next_syscall(t_trace *trace, int action)
 {
 	int	ret = 0;
 
-	ptrace(PTRACE_SYSCALL, trace->pid, NULL, trace->delivery_sig);
-	trace->delivery_sig = 0;
-	if (wait_child(trace))
-		return (3);
-	if (!(ret = check_child_state(trace, action)))
-		break;
-	if (ret == 1)
-		return (1);
+	while (1)
+	{
+		ptrace(PTRACE_SYSCALL, trace->pid, NULL, trace->delivery_sig);
+		trace->delivery_sig = 0;
+		if (wait_child(trace))
+			return (3);
+		if (!(ret = check_child_state(trace, action)))
+			break;
+		if (ret == 1)
+			return (1);
+	}
 	return (0);
 }
 

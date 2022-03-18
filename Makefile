@@ -19,7 +19,7 @@ FILES	=	main.c				\
 			strace_utils.c		\
 			trace.c				\
 			get_path.c			\
-			summary_display.c	\
+			summary.c			\
 			signal.c			\
 			display.c			\
 			program.c

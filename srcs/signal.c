@@ -73,6 +73,8 @@ void	catch_sigint(int signal)
 	(void)signal;
 	ptrace(PTRACE_DETACH, trace.pid, NULL, NULL);
 	ft_dprintf(2, "ft_strace: Process %d detached\n", trace.pid);
+	if (trace.c)
+		display_summary(&trace);
 	free_trace(&trace);
 	exit(130);
 }

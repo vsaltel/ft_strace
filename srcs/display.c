@@ -116,8 +116,6 @@ int		display_args(enum e_type type, uint64_t reg, int space)
 
 void	display_syscall(t_trace *trace)
 {
-	//rdi, rsi, rdx, r10, r8, r9
-	
 	ft_printf("%s(", trace->sys.name);
 	if (!display_args(trace->sys.arg1, trace->regs.rdi, 0))
 		if (!display_args(trace->sys.arg2, trace->regs.rsi, 1))

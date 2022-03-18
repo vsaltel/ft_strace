@@ -1,4 +1,5 @@
 #include "strace.h"
+#include "summary.h"
 
 static int get_memory(t_trace *trace)
 {
@@ -42,6 +43,12 @@ int	tracing(t_trace *trace)
 	{
 		if ((ret = next_syscall(trace, 1)))
 			break ;
+		if (trace->c)
+		{
+			ft_bzero(&trace->bef, sizeof(trace->bef));
+			ft_bzero(&trace->aft, sizeof(trace->aft));
+			gettimeofday(&trace->bef, NULL);
+		}
 		get_memory(trace);
 		trace->sys = get_syscall(trace);
 		if (!trace->c)
@@ -52,7 +59,10 @@ int	tracing(t_trace *trace)
 		if (!trace->c)
 			display_ret_syscall(trace->sys.ret, trace->regs.rax);
 		else
+		{
+			gettimeofday(&trace->aft, NULL);
 			update_summary(trace);
+		}
 	}
 	if (trace->c)
 		display_summary(trace);

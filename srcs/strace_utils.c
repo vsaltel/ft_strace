@@ -5,6 +5,7 @@ void	init_trace(t_trace *trace, int argc, char **argv, char **env)
 	trace->name = NULL;
 	trace->args = NULL;
 	trace->env = NULL;
+	trace->summary = NULL;
 	trace->pid = 0;
 	trace->ret = 0;
 	trace->c = 0;
@@ -25,6 +26,8 @@ void	init_trace(t_trace *trace, int argc, char **argv, char **env)
 
 void	free_trace(t_trace *trace)
 {
+	if (trace->summary)
+		free_sum(&trace->summary);
 	if (trace->name)
 		free(trace->name);
 }

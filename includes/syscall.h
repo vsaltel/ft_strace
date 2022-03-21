@@ -15,7 +15,7 @@ enum					e_type
 
 typedef struct			s_syscall
 {
-	int						code;
+	long long unsigned int	code;
 	char					*name;
 	enum e_type				arg1;
 	enum e_type				arg2;
@@ -357,7 +357,14 @@ static const t_syscall	g_syscall[] =
 	{ 326, "copy_file_range", TINT, TPTR, TINT, TPTR, TUINT, TUINT, TINT},
 	{ 327, "preadv2", TUINT, TPTR, TUINT, TUINT, TUINT, TINT, TINT},
 	{ 328, "pwritev2", TUINT, TPTR, TUINT, TUINT, TUINT, TINT, TINT},
-	{ 329, NULL, TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TNONE}
+	{ 329, "pkey_mprotect", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 330, "pkey_alloc", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 331, "pkey_free", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 332, "statx", TUINT, TSTR, TUINT, TUINT, TPTR, TNONE, TINT},
+	{ 333, "io_pgetevents", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 334, "rseq", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 335, "pkey_mprotect", TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},
+	{ 336, NULL, TNONE, TNONE, TNONE, TNONE, TNONE, TNONE, TNONE}
 };
 
 #endif

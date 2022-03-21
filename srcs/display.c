@@ -89,8 +89,6 @@ void	display_lstr_reg(t_trace *trace, uint64_t reg)
 
 int		display_args(enum e_type type, uint64_t reg, int space)
 {
-	//int		fd;
-	//long	tmp;
 	if (type == TNONE)
 		return (1);
 	if (space)
@@ -116,13 +114,18 @@ int		display_args(enum e_type type, uint64_t reg, int space)
 
 void	display_syscall(t_trace *trace)
 {
-	ft_printf("%s(", trace->sys.name);
-	if (!display_args(trace->sys.arg1, trace->regs.rdi, 0))
-		if (!display_args(trace->sys.arg2, trace->regs.rsi, 1))
-			if (!display_args(trace->sys.arg3, trace->regs.rdx, 1))
-				if (!display_args(trace->sys.arg4, trace->regs.r10, 1))
-					if (!display_args(trace->sys.arg5, trace->regs.r8, 1))
-						display_args(trace->sys.arg6, trace->regs.r9, 1);
+	if (!trace->sys.name)
+		ft_printf("syscall_%#llx(?)\n", trace->regs.orig_rax);
+	else
+	{
+		ft_printf("%s(", trace->sys.name);
+		if (!display_args(trace->sys.arg1, trace->regs.rdi, 0))
+			if (!display_args(trace->sys.arg2, trace->regs.rsi, 1))
+				if (!display_args(trace->sys.arg3, trace->regs.rdx, 1))
+					if (!display_args(trace->sys.arg4, trace->regs.r10, 1))
+						if (!display_args(trace->sys.arg5, trace->regs.r8, 1))
+							display_args(trace->sys.arg6, trace->regs.r9, 1);
+	}
 }
 
 void	display_ret_syscall(enum e_type type, uint64_t reg)

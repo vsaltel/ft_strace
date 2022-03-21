@@ -1,6 +1,24 @@
 #ifndef STRACE_H
 # define STRACE_H
 
+# define ERESTARTSYS 512
+# define ERESTARTNOINTR 513
+# define ERESTARTNOHAND 514
+# define ENOIOCTLCMD 515
+# define ERESTART_RESTARTBLOCK 516
+# define EPROBE_DEFER 517
+# define EOPENSTALE 518
+# define EBADHANDLE 521
+# define ENOTSYNC 522
+# define EBADCOOKIE 523
+# define ENOTSUPP 524
+# define ETOOSMALL 525
+# define ESERVERFAULT 526
+# define EBADTYPE 527
+# define EJUKEBOX 528
+# define EIOCBQUEUED 529
+# define EIOCBRETRY 530
+
 # include <sys/wait.h>
 # include <sys/ptrace.h>
 # include <sys/uio.h>
@@ -80,9 +98,10 @@ void	init_block_sig(t_trace *trace);
 
 /*	summary.c */
 void	display_summary(t_trace *trace);
-void	update_summary(t_trace *trace);
+void	update_summary_count(t_trace *trace, long reg);
+void	update_summary_time(t_trace *trace);
 void	free_sum(t_sum **sum);
-t_sum	*new_sum(t_sum **deb, int code, char *name);
-t_sum	*search_sum(t_sum *deb, char *str);
+t_sum	*new_sum(t_sum **deb, long long unsigned int code, char *name);
+t_sum	*search_sum(t_sum *deb, long long unsigned int code);
 
 #endif

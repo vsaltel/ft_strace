@@ -51,13 +51,16 @@ t_syscall get_syscall(t_trace *trace)
 	int			i = -1;
 	t_syscall	sys;
 
+	sys.name = NULL;
 	while (g_syscall[++i].name)
 	{
-		if (trace->regs.orig_rax == (long long unsigned int)g_syscall[i].code || !g_syscall[i].name)
+		if (trace->regs.orig_rax == (long long unsigned int)g_syscall[i].code)
 		{
 			sys = g_syscall[i];
 			break;
 		}
 	}
+	if (!sys.name)
+		sys.code = trace->regs.orig_rax;
 	return (sys);
 }

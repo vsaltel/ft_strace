@@ -5,8 +5,16 @@ static void add_hex_char(char *str, int *i, char c)
 	char	*tmp;
 	int		len;
 
-	tmp = ft_sprintf("\\0%o", (int)c);
-	len = ft_strlen(tmp);
+	if (c == 0)
+	{
+		tmp = ft_strdup("\\0");
+		len = 2;
+	}
+	else
+	{
+		tmp = ft_sprintf("\\%o", (int)c);
+		len = ft_strlen(tmp);
+	}
 	ft_memcpy(str + *i, tmp, len);
 	*i += len;
 	free(tmp);
@@ -40,16 +48,19 @@ static void	print_escaped_str(char *str)
 	int		y = 0;
 	int		len = 32;
 
-	if (trace.sys.code == 1 &&
-		trace.regs.rdx < (unsigned int)len && (int)trace.regs.rdx > 0)
+	if (trace.sys.code == 1 && trace.regs.rdx < (unsigned int)len && (int)trace.regs.rdx >= 0)
 		len = (int)trace.regs.rdx;
-	while (str[++i] && i < len)
+	else if (trace.sys.code == 0 && trace.regs.rax < (unsigned int)len && (int)trace.regs.rax >= 0)
+		len = (int)trace.regs.rax;
+	while (++i < len)
 	{
+		if (!str[i] && trace.sys.code != 0)
+			break;
 		if (str[i] >= 0x07 && str[i] <= 0x0d)
 			add_spec_char(buf, &y, str[i]);
-		else if (!ft_isprint(str[i]) && str[i] > 0)
+		else if (!ft_isprint(str[i]) && str[i] >= 0)
 			add_hex_char(buf, &y, str[i]);
-		else if (str[i] > 0)
+		else if (str[i] >= 0)
 			buf[y++] = str[i];
 	}
 	buf[y] = '\0';
@@ -100,7 +111,7 @@ void	display_lstr_reg(t_trace *trace, uint64_t reg)
 		}
 	}
 	if (count == 10)
-		write(1, "...", 3);
+		write(1, ", ...", 5);
 	if (i)
 		write(1, "]", 1);
 }
@@ -130,15 +141,25 @@ int		display_args(enum e_type type, uint64_t reg, int space)
 	
 }
 
-void	display_syscall(t_trace *trace)
+void	display_syscall(t_trace *trace, int cont)
 {
+	if (trace->sys.code != 0 && cont)
+		return ;
 	if (!trace->sys.name)
 		ft_printf("syscall_%#llx(?)\n", trace->regs.orig_rax);
+	else if (cont)
+	{
+		if (!display_args(trace->sys.arg2, trace->regs.rsi, 1))
+			if (!display_args(trace->sys.arg3, trace->regs.rdx, 1))
+				if (!display_args(trace->sys.arg4, trace->regs.r10, 1))
+					if (!display_args(trace->sys.arg5, trace->regs.r8, 1))
+						display_args(trace->sys.arg6, trace->regs.r9, 1);
+	}
 	else
 	{
 		ft_printf("%s(", trace->sys.name);
 		if (!display_args(trace->sys.arg1, trace->regs.rdi, 0))
-			if (!display_args(trace->sys.arg2, trace->regs.rsi, 1))
+			if (trace->sys.code != 0 && !display_args(trace->sys.arg2, trace->regs.rsi, 1))
 				if (!display_args(trace->sys.arg3, trace->regs.rdx, 1))
 					if (!display_args(trace->sys.arg4, trace->regs.r10, 1))
 						if (!display_args(trace->sys.arg5, trace->regs.r8, 1))

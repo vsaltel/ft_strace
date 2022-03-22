@@ -55,13 +55,15 @@ int	tracing(t_trace *trace)
 		get_memory(trace);
 		trace->sys = get_syscall(trace);
 		if (!trace->c)
-			display_syscall(trace);
+			display_syscall(trace, 0);
 		if ((ret = next_syscall(trace, 0)))
 		{
 			update_summary_count(trace, 0);
 			break;
 		}
 		get_memory(trace);
+		if (!trace->c)
+			display_syscall(trace, 1);
 		update_summary_count(trace, (long)trace->regs.rax);
 		loop = 1;
 	}

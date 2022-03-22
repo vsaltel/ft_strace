@@ -1,5 +1,38 @@
 #include "strace.h"
 
+static void add_hex_char(char *str, int *i, char c)
+{
+	char	*tmp;
+	int		len;
+
+	tmp = ft_sprintf("\\0%o", (int)c);
+	len = ft_strlen(tmp);
+	ft_memcpy(str + *i, tmp, len);
+	*i += len;
+	free(tmp);
+}
+
+static void add_spec_char(char *str, int *i, char c)
+{
+	str[*i] = '\\';
+	(*i)++;
+	if (c == 0x07)
+		str[*i] = 'a';
+	else if (c == 0x08)
+		str[*i] = 'b';
+	else if (c == 0x09)
+		str[*i] = 't';
+	else if (c == 0x0a)
+		str[*i] = 'n';
+	else if (c == 0x0b)
+		str[*i] = 'v';
+	else if (c == 0x0c)
+		str[*i] = 'f';
+	else if (c == 0x0d)
+		str[*i] = 'r';
+	(*i)++;
+}
+
 static void	print_escaped_str(char *str)
 {
 	char	buf[BUFF_SIZE];
@@ -13,26 +46,11 @@ static void	print_escaped_str(char *str)
 	while (str[++i] && i < len)
 	{
 		if (str[i] >= 0x07 && str[i] <= 0x0d)
-			buf[y++] = '\\';
-		if (str[i] == 0x07)
-			buf[y] = 'a';
-		else if (str[i] == 0x08)
-			buf[y] = 'b';
-		else if (str[i] == 0x09)
-			buf[y] = 't';
-		else if (str[i] == 0x0a)
-			buf[y] = 'n';
-		else if (str[i] == 0x0b)
-			buf[y] = 'v';
-		else if (str[i] == 0x0c)
-			buf[y] = 'f';
-		else if (str[i] == 0x0d)
-			buf[y] = 'r';
-		else if (ft_isprint(str[i]))
-			buf[y] = str[i];
-		else
-			break;
-		y++;
+			add_spec_char(buf, &y, str[i]);
+		else if (!ft_isprint(str[i]) && str[i] > 0)
+			add_hex_char(buf, &y, str[i]);
+		else if (str[i] > 0)
+			buf[y++] = str[i];
 	}
 	buf[y] = '\0';
 	if (i >= 32)

@@ -61,12 +61,14 @@ void	update_summary_count(t_trace *trace, long reg)
 
 void	update_summary_time(t_trace *trace)
 {
-	t_sum *sum;
+	t_sum	*sum;
+	float	tmp_aft, tmp_bef;
 
 	if (!(sum = search_sum(trace->summary, trace->sys.code)))
 		sum = new_sum(&trace->summary, trace->sys.code, trace->sys.name);
-	sum->time_spend += (trace->aft.tv_sec - trace->bef.tv_sec) +
-		((trace->aft.tv_usec - trace->bef.tv_usec) * 0.000001);
+	tmp_bef = trace->bef.tv_sec + (trace->bef.tv_usec * 0.000001);
+	tmp_aft = trace->aft.tv_sec + (trace->aft.tv_usec * 0.000001);
+	sum->time_spend += tmp_aft - tmp_bef;
 }
 
 t_sum	*sort_summary_by_time(t_sum **sum)

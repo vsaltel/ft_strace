@@ -40,7 +40,7 @@ static const t_syscall	g_syscall[] =
 	{ 9, "mmap", TPTR, TUINT, TUINT, TUINT, TUINT, TUINT, TPTR},
 	{ 10, "mprotect", TPTR, TUINT, TUINT, TNONE, TNONE, TNONE, TINT},
 	{ 11, "munmap", TPTR, TUINT, TNONE, TNONE, TNONE, TNONE, TINT},
-	{ 12, "brk", TUINT, TNONE, TNONE, TNONE, TNONE, TNONE, TPTR},
+	{ 12, "brk", TPTR, TNONE, TNONE, TNONE, TNONE, TNONE, TPTR},
 	{ 13, "rt_sigaction", TINT, TPTR, TPTR, TUINT, TNONE, TNONE, TINT},
 	{ 14, "rt_sigprocmask", TINT, TSTR, TPTR, TUINT, TNONE, TNONE, TINT},
 	{ 15, "rt_sigreturn", TUINT, TNONE, TNONE, TNONE, TNONE, TNONE, TINT},

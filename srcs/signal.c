@@ -50,17 +50,30 @@ int	check_child_state(t_trace *trace, int action)
 	return (0);
 }
 
-int	wait_child(t_trace *trace)
+int	wait_child(t_trace *trace, int action)
 {
+	int	ret = 0;
+	struct rusage usage;
+
+	ft_bzero(&usage, sizeof(usage));
 	if (sigprocmask(SIG_SETMASK, &trace->old, NULL))
 		perror("sigprocmask SETMASK");
-	if (waitpid(trace->pid, &trace->ret, WUNTRACED) == -1)
+	ret = wait4(trace->pid, &trace->ret, WUNTRACED, &usage);
+	if (sigprocmask(SIG_BLOCK, &trace->new, NULL))
+		perror("sigprocmask BLOCK");
+	if (ret == -1)
 	{
 		ft_dprintf(2, "ft_strace: waitpid fail\n");
 		return (3);
 	}
-	if (sigprocmask(SIG_BLOCK, &trace->new, NULL))
-		perror("sigprocmask BLOCK");
+	if (action)
+	{
+		ft_bzero(&trace->bef, sizeof(trace->bef));
+		ft_bzero(&trace->aft, sizeof(trace->aft));
+		trace->bef = usage.ru_stime;
+	}
+	if (!action)
+		trace->aft = usage.ru_stime;
 	return (0);
 }
 

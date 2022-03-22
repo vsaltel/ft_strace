@@ -24,17 +24,10 @@ static int	next_syscall(t_trace *trace, int action)
 
 	while (1)
 	{
-		if (trace->c && !action)
-		{
-			ft_bzero(&trace->bef, sizeof(trace->bef));
-			ft_bzero(&trace->aft, sizeof(trace->aft));
-			gettimeofday(&trace->bef, NULL);
-		}
 		ptrace(PTRACE_SYSCALL, trace->pid, NULL, trace->delivery_sig);
-		gettimeofday(&trace->aft, NULL);
+		ret = wait_child(trace, action);
 		if (trace->c && !action)
 			update_summary_time(trace);
-		ret = wait_child(trace);
 		if (ret)
 			return (3);
 		trace->delivery_sig = 0;

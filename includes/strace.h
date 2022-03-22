@@ -1,30 +1,13 @@
 #ifndef STRACE_H
 # define STRACE_H
 
-# define ERESTARTSYS 512
-# define ERESTARTNOINTR 513
-# define ERESTARTNOHAND 514
-# define ENOIOCTLCMD 515
-# define ERESTART_RESTARTBLOCK 516
-# define EPROBE_DEFER 517
-# define EOPENSTALE 518
-# define EBADHANDLE 521
-# define ENOTSYNC 522
-# define EBADCOOKIE 523
-# define ENOTSUPP 524
-# define ETOOSMALL 525
-# define ESERVERFAULT 526
-# define EBADTYPE 527
-# define EJUKEBOX 528
-# define EIOCBQUEUED 529
-# define EIOCBRETRY 530
-
 # include <sys/wait.h>
 # include <sys/ptrace.h>
 # include <sys/uio.h>
 # include <sys/user.h>
 # include <sys/types.h>
 # include <sys/time.h>
+# include <sys/resource.h>
 # include <elf.h>
 # include <signal.h>
 # include <errno.h>
@@ -93,7 +76,7 @@ char	*get_path(t_trace *trace);
 /*	signal.c */
 int		check_child_state(t_trace *trace, int action);
 void	catch_sigint(int signal);
-int		wait_child(t_trace *trace);
+int		wait_child(t_trace *trace, int action);
 void	init_block_sig(t_trace *trace);
 
 /*	summary.c */

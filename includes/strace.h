@@ -18,17 +18,6 @@
 # include "syscall.h"
 # include "summary.h"
 
-typedef struct s_reg32
-{
-	uint32_t		ebx, ecx, edx, esi, edi, ebp, eax;
-	unsigned short	ds, __ds, es, __es;
-	unsigned short	fs, __fs, gs, __gs;
-	uint32_t		orig_eax, eip;
-	unsigned short	cs, __cs;
-	uint32_t		eflags, esp;
-	unsigned short	ss, __ss;
-}				t_regs32;
-
 typedef struct s_trace
 {
 	int						c;
@@ -39,6 +28,7 @@ typedef struct s_trace
 	int						ppid;
 	struct iovec			iov;
 	struct user_regs_struct	regs;
+	int						arch;
 	int						ret;
 	int						delivery_sig;
 	char					*stack_file;
@@ -54,9 +44,9 @@ extern t_trace trace;
 
 /*	strace_utils.c */
 void	init_trace(t_trace *trace, int argc, char **argv, char **env);
-char	*get_stack_file(t_trace *trace);
 t_syscall get_syscall(t_trace *trace);
 void	free_trace(t_trace *trace);
+int		get_architecture(t_trace *trace);
 
 /*	program.c */
 int		launch_prog(t_trace *trace);

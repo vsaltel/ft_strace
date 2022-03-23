@@ -5,7 +5,6 @@ static int	init_tracing(t_trace *trace)
 	signal(SIGINT, &catch_sigint);
 	ptrace(PTRACE_SEIZE, trace->pid, NULL, NULL);
 	ptrace(PTRACE_INTERRUPT, trace->pid, NULL, NULL);
-	get_stack_file(trace);
 	init_block_sig(trace);
 	if (waitpid(trace->pid, &trace->ret, WUNTRACED) == -1)
 	{

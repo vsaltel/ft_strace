@@ -14,6 +14,8 @@ int	main(int argc, char **argv, char **env)
 	init_trace(&trace, argc, argv, env);
 	if (!get_path(&trace))
 		return (1);
+	if ((ret = get_architecture(&trace)))
+		return (ret);
 	ret = launch_prog(&trace);
 	free_trace(&trace);
 	return (ret);

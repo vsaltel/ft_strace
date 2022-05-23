@@ -5,9 +5,18 @@ static int get_memory(t_trace *trace)
 {
 	int	ptrace_ret;
 
-	ft_memset(&trace->regs, 0, sizeof(trace->regs));
-	trace->iov.iov_len = sizeof(trace->regs);
-	trace->iov.iov_base = &(trace->regs);
+	if (trace->arch == 32)
+	{
+		ft_memset(&trace->regs32, 0, sizeof(trace->regs32));
+		trace->iov.iov_len = sizeof(trace->regs32);
+		trace->iov.iov_base = &(trace->regs32);
+	}
+	else
+	{
+		ft_memset(&trace->regs64, 0, sizeof(trace->regs64));
+		trace->iov.iov_len = sizeof(trace->regs64);
+		trace->iov.iov_base = &(trace->regs64);
+	}
 	ptrace_ret = ptrace(PTRACE_GETREGSET, trace->pid, NT_PRSTATUS, &(trace->iov));
 	if (ptrace_ret == -1)
 	{
@@ -31,7 +40,10 @@ static int	next_syscall(t_trace *trace, int action)
 		if (ret)
 			return (3);
 		trace->delivery_sig = 0;
-		if (!(ret = check_child_state(trace, action)))
+		ret = check_child_state(trace, action);
+		if (trace->detach)
+			detach_prog(trace);
+		if (!ret)
 			break;
 		if (ret == 1)
 			return (1);
@@ -48,15 +60,15 @@ int	tracing(t_trace *trace)
 
 	while (1)
 	{
-		if ((ret = next_syscall(trace, 1)))
+		if ((ret = next_syscall(trace, 1)) && ret != 4)
 			break ;
 		if (!trace->c && loop && ret != 4)
-			display_ret_syscall(trace->sys.ret, trace->regs.rax);
+			display_ret_syscall(trace->sys.ret, (trace->arch == 64) ? trace->regs64.rax : (long unsigned int)trace->regs32.eax);
 		get_memory(trace);
 		trace->sys = get_syscall(trace);
 		if (!trace->c)
 			display_syscall(trace, 0);
-		if ((ret = next_syscall(trace, 0)))
+		if ((ret = next_syscall(trace, 0)) && ret != 4)
 		{
 			update_summary_count(trace, 0);
 			break;
@@ -64,7 +76,7 @@ int	tracing(t_trace *trace)
 		get_memory(trace);
 		if (!trace->c)
 			display_syscall(trace, 1);
-		update_summary_count(trace, (long)trace->regs.rax);
+		update_summary_count(trace, (long)((trace->arch == 64) ? trace->regs64.rax : (long unsigned int)trace->regs32.eax));
 		loop = 1;
 	}
 	if (trace->c)

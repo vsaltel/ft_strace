@@ -33,7 +33,7 @@ int	launch_prog(t_trace *trace)
 			return (ret);
 		ret = tracing(trace);
 	}
-	else //son
+	else
 	{
 		if (execve(trace->name, trace->args, trace->env) == -1)
 		{

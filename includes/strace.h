@@ -18,6 +18,58 @@
 # include "syscall.h"
 # include "summary.h"
 
+typedef struct user_regs_struct64
+{
+  unsigned long r15;
+  unsigned long r14;
+  unsigned long r13;
+  unsigned long r12;
+  unsigned long rbp;
+  unsigned long rbx;
+  unsigned long r11;
+  unsigned long r10;
+  unsigned long r9;
+  unsigned long r8;
+  unsigned long rax;
+  unsigned long rcx;
+  unsigned long rdx;
+  unsigned long rsi;
+  unsigned long rdi;
+  unsigned long orig_rax;
+  unsigned long rip;
+  unsigned long cs;
+  unsigned long eflags;
+  unsigned long rsp;
+  unsigned long ss;
+  unsigned long fs_base;
+  unsigned long gs_base;
+  unsigned long ds;
+  unsigned long es;
+  unsigned long fs;
+  unsigned long gs;
+}				t_regs_64;
+
+typedef struct user_regs_struct32
+{
+  long int ebx;
+  long int ecx;
+  long int edx;
+  long int esi;
+  long int edi;
+  long int ebp;
+  long int eax;
+  long int xds;
+  long int xes;
+  long int xfs;
+  long int xgs;
+  long int orig_eax;
+  long int eip;
+  long int xcs;
+  long int eflags;
+  long int esp;
+  long int xss;
+}				t_regs_32;
+
 typedef struct s_trace
 {
 	int						c;
@@ -27,7 +79,9 @@ typedef struct s_trace
 	int						pid;
 	int						ppid;
 	struct iovec			iov;
-	struct user_regs_struct	regs;
+	t_regs_64				regs64;
+	t_regs_32				regs32;
+	int						detach;
 	int						arch;
 	int						ret;
 	int						delivery_sig;
@@ -68,6 +122,7 @@ int		check_child_state(t_trace *trace, int action);
 void	catch_sigint(int signal);
 int		wait_child(t_trace *trace, int action);
 void	init_block_sig(t_trace *trace);
+void	detach_prog(t_trace *trace);
 
 /*	summary.c */
 void	display_summary(t_trace *trace);

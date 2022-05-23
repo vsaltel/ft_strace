@@ -105,10 +105,16 @@ void	init_block_sig(t_trace *trace)
 void	catch_sigint(int signal)
 {
 	(void)signal;
-	ptrace(PTRACE_DETACH, trace.pid, NULL, NULL);
-	ft_dprintf(2, "ft_strace: Process %d detached\n", trace.pid);
-	if (trace.c)
-		display_summary(&trace);
-	free_trace(&trace);
+	kill(trace.pid, SIGINT);
+	trace.detach = 1;
+}
+
+void	detach_prog(t_trace *trace)
+{
+	ptrace(PTRACE_DETACH, trace->pid, NULL, NULL);
+	ft_dprintf(2, "ft_strace: Process %d detached\n", trace->pid);
+	if (trace->c)
+		display_summary(trace);
+	free_trace(trace);
 	exit(130);
 }

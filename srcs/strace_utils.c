@@ -9,6 +9,7 @@ void	init_trace(t_trace *trace, int argc, char **argv, char **env)
 	trace->pid = 0;
 	trace->ret = 0;
 	trace->c = 0;
+	trace->detach = 0;
 	trace->arch = 64;
 	trace->delivery_sig = 0;
 	if (argc > 1)
@@ -72,17 +73,22 @@ t_syscall get_syscall(t_trace *trace)
 {
 	int			i = -1;
 	t_syscall	sys;
+	long long unsigned int cmp;
 
+	if (trace->arch == 64)
+		cmp = trace->regs64.orig_rax;
+	else
+		cmp = trace->regs32.orig_eax;
 	sys.name = NULL;
 	while (g_syscall[++i].name)
 	{
-		if (trace->regs.orig_rax == (long long unsigned int)g_syscall[i].code)
+		if (cmp == (long long unsigned int)g_syscall[i].code)
 		{
 			sys = g_syscall[i];
 			break;
 		}
 	}
 	if (!sys.name)
-		sys.code = trace->regs.orig_rax;
+		sys.code = cmp;
 	return (sys);
 }

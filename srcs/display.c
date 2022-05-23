@@ -48,13 +48,23 @@ static void	print_escaped_str(char *str)
 	int		y = 0;
 	int		len = 32;
 
-	if (trace.sys.code == 1 && trace.regs.rdx < (unsigned int)len && (int)trace.regs.rdx >= 0)
-		len = (int)trace.regs.rdx;
-	else if (trace.sys.code == 0 && trace.regs.rax < (unsigned int)len && (int)trace.regs.rax >= 0)
-		len = (int)trace.regs.rax;
+	if (trace.arch == 32)
+	{
+		if (trace.sys.code == 1 && trace.regs32.edx < (unsigned int)len && (int)trace.regs32.edx >= 0)
+			len = (int)trace.regs32.edx;
+		else if ((trace.sys.code == 0 || trace.sys.code == 17) && trace.regs32.eax < (unsigned int)len && (int)trace.regs32.eax >= 0)
+			len = (int)trace.regs32.eax;
+	}
+	else
+	{
+		if (trace.sys.code == 1 && trace.regs64.rdx < (unsigned int)len && (int)trace.regs64.rdx >= 0)
+			len = (int)trace.regs64.rdx;
+		else if ((trace.sys.code == 0 || trace.sys.code == 17) && trace.regs64.rax < (unsigned int)len && (int)trace.regs64.rax >= 0)
+			len = (int)trace.regs64.rax;
+	}
 	while (++i < len)
 	{
-		if (!str[i] && trace.sys.code != 0)
+		if (!str[i] && (trace.sys.code != 0 && trace.sys.code != 17))
 			break;
 		if (str[i] >= 0x07 && str[i] <= 0x0d)
 			add_spec_char(buf, &y, str[i]);
@@ -141,30 +151,65 @@ int		display_args(enum e_type type, uint64_t reg, int space)
 	
 }
 
-void	display_syscall(t_trace *trace, int cont)
+static void	display_syscall_64(t_trace *trace, int cont)
 {
-	if (trace->sys.code != 0 && cont)
+	if ((trace->sys.code != 0 && trace->sys.code != 17) && cont)
 		return ;
 	if (!trace->sys.name)
-		ft_printf("syscall_%#llx(?)\n", trace->regs.orig_rax);
+		ft_printf("syscall_%#llx(?)\n", trace->regs64.orig_rax);
 	else if (cont)
 	{
-		if (!display_args(trace->sys.arg2, trace->regs.rsi, 1))
-			if (!display_args(trace->sys.arg3, trace->regs.rdx, 1))
-				if (!display_args(trace->sys.arg4, trace->regs.r10, 1))
-					if (!display_args(trace->sys.arg5, trace->regs.r8, 1))
-						display_args(trace->sys.arg6, trace->regs.r9, 1);
+		if (!display_args(trace->sys.arg2, trace->regs64.rsi, 1))
+			if (!display_args(trace->sys.arg3, trace->regs64.rdx, 1))
+				if (!display_args(trace->sys.arg4, trace->regs64.r10, 1))
+					if (!display_args(trace->sys.arg5, trace->regs64.r8, 1))
+						display_args(trace->sys.arg6, trace->regs64.r9, 1);
 	}
 	else
 	{
 		ft_printf("%s(", trace->sys.name);
-		if (!display_args(trace->sys.arg1, trace->regs.rdi, 0))
-			if (trace->sys.code != 0 && !display_args(trace->sys.arg2, trace->regs.rsi, 1))
-				if (!display_args(trace->sys.arg3, trace->regs.rdx, 1))
-					if (!display_args(trace->sys.arg4, trace->regs.r10, 1))
-						if (!display_args(trace->sys.arg5, trace->regs.r8, 1))
-							display_args(trace->sys.arg6, trace->regs.r9, 1);
+		if (!display_args(trace->sys.arg1, trace->regs64.rdi, 0))
+			if ((trace->sys.code != 0 && trace->sys.code != 17) && !display_args(trace->sys.arg2, trace->regs64.rsi, 1))
+				if (!display_args(trace->sys.arg3, trace->regs64.rdx, 1))
+					if (!display_args(trace->sys.arg4, trace->regs64.r10, 1))
+						if (!display_args(trace->sys.arg5, trace->regs64.r8, 1))
+							display_args(trace->sys.arg6, trace->regs64.r9, 1);
 	}
+}
+
+static void	display_syscall_32(t_trace *trace, int cont)
+{
+	ft_printf("__32__");
+	if ((trace->sys.code != 0 && trace->sys.code != 17) && cont)
+		return ;
+	if (!trace->sys.name)
+		ft_printf("syscall_%#llx(?)\n", trace->regs32.orig_eax);
+	else if (cont)
+	{
+		if (!display_args(trace->sys.arg2, trace->regs32.ecx, 1))
+			if (!display_args(trace->sys.arg3, trace->regs32.edx, 1))
+				if (!display_args(trace->sys.arg4, trace->regs32.esi, 1))
+					if (!display_args(trace->sys.arg5, trace->regs32.edi, 1))
+						display_args(trace->sys.arg6, trace->regs32.ebp, 1);
+	}
+	else
+	{
+		ft_printf("%s(", trace->sys.name);
+		if (!display_args(trace->sys.arg1, trace->regs32.ebx, 0))
+			if (trace->sys.code != 0 && !display_args(trace->sys.arg2, trace->regs32.ecx, 1))
+				if (!display_args(trace->sys.arg3, trace->regs32.edx, 1))
+					if (!display_args(trace->sys.arg4, trace->regs32.esi, 1))
+						if (!display_args(trace->sys.arg5, trace->regs32.edi, 1))
+							display_args(trace->sys.arg6, trace->regs32.ebp, 1);
+	}
+}
+
+void	display_syscall(t_trace *trace, int cont)
+{
+	if (trace->arch == 64)
+		display_syscall_64(trace, cont);
+	else if (trace->arch == 32)
+		display_syscall_32(trace, cont);
 }
 
 void	display_ret_syscall(enum e_type type, uint64_t reg)
@@ -172,7 +217,7 @@ void	display_ret_syscall(enum e_type type, uint64_t reg)
 	if (type == TNONE)
 		return ;
 	if (type == TINT)
-		ft_printf(") = %ld\n", reg);
+		ft_printf(") \t= %ld\n", reg);
 	else if (type == TPTR)
-		ft_printf(") = %#lp\n", reg);
+		ft_printf(") \t= %#lp\n", reg);
 }

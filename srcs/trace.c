@@ -1,6 +1,12 @@
 #include "strace.h"
 #include "summary.h"
 
+//test
+static void	display_regs(t_trace *trace) 
+{
+	ft_printf("regs -> eax:%x ebx:%x, ecx:%x, edx:%x, esi:%x, edi:%x, ebp:%x\n", (int)trace->regs32.orig_eax, (int)trace->regs32.ebx, (int)trace->regs32.ecx, (int)trace->regs32.edx, (int)trace->regs32.esi, (int)trace->regs32.edi, (int)trace->regs32.ebp);
+}
+
 static int get_memory(t_trace *trace)
 {
 	int	ptrace_ret;
@@ -63,7 +69,12 @@ int	tracing(t_trace *trace)
 		if ((ret = next_syscall(trace, 1)) && ret != 4)
 			break ;
 		if (!trace->c && loop && ret != 4)
-			display_ret_syscall(trace->sys.ret, (trace->arch == 64) ? trace->regs64.rax : (long unsigned int)trace->regs32.eax);
+		{
+			if (trace->arch == 32)
+				display_ret_syscall_32(trace->sys.ret, trace->regs32.eax);
+			else
+				display_ret_syscall_64(trace->sys.ret, trace->regs64.rax);
+		}
 		get_memory(trace);
 		trace->sys = get_syscall(trace);
 		if (!trace->c)

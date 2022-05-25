@@ -49,25 +49,38 @@ typedef struct user_regs_struct64
   unsigned long gs;
 }				t_regs_64;
 
+/*
 typedef struct user_regs_struct32
 {
-  long int ebx;
-  long int ecx;
-  long int edx;
-  long int esi;
-  long int edi;
-  long int ebp;
-  long int eax;
-  long int xds;
-  long int xes;
-  long int xfs;
-  long int xgs;
-  long int orig_eax;
-  long int eip;
-  long int xcs;
-  long int eflags;
-  long int esp;
-  long int xss;
+  unsigned int ebx;
+  unsigned int ecx;
+  unsigned int edx;
+  unsigned int esi;
+  unsigned int edi;
+  unsigned int ebp;
+  unsigned int eax;
+  unsigned int xds;
+  unsigned int xes;
+  unsigned int xfs;
+  unsigned int xgs;
+  unsigned int orig_eax;
+  unsigned int eip;
+  unsigned int xcs;
+  unsigned int eflags;
+  unsigned int esp;
+  unsigned int xss;
+}				t_regs_32;
+*/
+
+typedef struct user_regs_struct32
+{
+	int ebx, ecx, edx, esi, edi, ebp, eax;
+	unsigned short ds, __ds, es, __es;
+	unsigned short fs, __fs, gs, __gs;
+	int orig_eax, eip;
+	unsigned short cs, __cs;
+	int eflags, esp;
+	unsigned short ss, __ss;
 }				t_regs_32;
 
 typedef struct s_trace
@@ -109,8 +122,10 @@ int		launch_prog(t_trace *trace);
 int		tracing(t_trace *trace);
 
 /*	display.c */
-int		display_args(enum e_type type, uint64_t reg, int space);
-void	display_ret_syscall(enum e_type type, uint64_t reg);
+int		display_args_64(enum e_type type, uint64_t reg, int space);
+int		display_args_32(enum e_type type, uint32_t reg, int space);
+void	display_ret_syscall_32(enum e_type type, uint32_t reg);
+void	display_ret_syscall_64(enum e_type type, uint64_t reg);
 void	display_syscall(t_trace *trace, int cont);
 void	display_str_reg(t_trace *trace, uint64_t reg);
 

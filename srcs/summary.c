@@ -52,8 +52,8 @@ void	update_summary_count(t_trace *trace, long reg)
 {
 	t_sum *sum;
 
-	if (!(sum = search_sum(trace->summary, trace->sys.code)))
-		sum = new_sum(&trace->summary, trace->sys.code, trace->sys.name);
+	if (!(sum = search_sum(trace->summary, trace->sys.code64)))
+		sum = new_sum(&trace->summary, trace->sys.code64, trace->sys.name);
 	sum->use_count++;
 	if (reg < 0)
 		sum->err_count++;
@@ -64,8 +64,8 @@ void	update_summary_time(t_trace *trace)
 	t_sum	*sum;
 	float	tmp_aft, tmp_bef;
 
-	if (!(sum = search_sum(trace->summary, trace->sys.code)))
-		sum = new_sum(&trace->summary, trace->sys.code, trace->sys.name);
+	if (!(sum = search_sum(trace->summary, trace->sys.code64)))
+		sum = new_sum(&trace->summary, trace->sys.code64, trace->sys.name);
 	tmp_bef = trace->bef.tv_sec + (trace->bef.tv_usec * 0.000001);
 	tmp_aft = trace->aft.tv_sec + (trace->aft.tv_usec * 0.000001);
 	sum->time_spend += tmp_aft - tmp_bef;

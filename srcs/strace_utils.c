@@ -73,7 +73,7 @@ t_syscall get_syscall(t_trace *trace)
 {
 	int			i = -1;
 	t_syscall	sys;
-	long long unsigned int cmp;
+	int			cmp;
 
 	if (trace->arch == 64)
 		cmp = trace->regs64.orig_rax;
@@ -82,13 +82,19 @@ t_syscall get_syscall(t_trace *trace)
 	sys.name = NULL;
 	while (g_syscall[++i].name)
 	{
-		if (cmp == (long long unsigned int)g_syscall[i].code)
+		if ((trace->arch == 32 && cmp == g_syscall[i].code32) ||
+			(trace->arch == 64 && cmp == g_syscall[i].code64))
 		{
 			sys = g_syscall[i];
 			break;
 		}
 	}
 	if (!sys.name)
-		sys.code = cmp;
+	{
+		if (trace->arch == 32)
+			sys.code32 = cmp;
+		else
+			sys.code64 = cmp;
+	}
 	return (sys);
 }

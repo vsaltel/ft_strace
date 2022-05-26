@@ -96,6 +96,7 @@ typedef struct s_trace
 	t_regs_32				regs32;
 	int						detach;
 	int						arch;
+	int						ch_arch;
 	int						ret;
 	int						delivery_sig;
 	char					*stack_file;
@@ -113,7 +114,6 @@ extern t_trace trace;
 void	init_trace(t_trace *trace, int argc, char **argv, char **env);
 t_syscall get_syscall(t_trace *trace);
 void	free_trace(t_trace *trace);
-int		get_architecture(t_trace *trace);
 
 /*	program.c */
 int		launch_prog(t_trace *trace);

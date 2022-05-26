@@ -11,19 +11,19 @@ static int get_memory(t_trace *trace)
 {
 	int	ptrace_ret;
 
-	if (trace->arch == 32)
-	{
-		ft_memset(&trace->regs32, 0, sizeof(trace->regs32));
-		trace->iov.iov_len = sizeof(trace->regs32);
-		trace->iov.iov_base = &(trace->regs32);
-	}
-	else
-	{
-		ft_memset(&trace->regs64, 0, sizeof(trace->regs64));
-		trace->iov.iov_len = sizeof(trace->regs64);
-		trace->iov.iov_base = &(trace->regs64);
-	}
+	ft_memset(&trace->regs64, 0, sizeof(trace->regs64));
+	trace->iov.iov_len = sizeof(trace->regs64);
+	trace->iov.iov_base = &(trace->regs64);
 	ptrace_ret = ptrace(PTRACE_GETREGSET, trace->pid, NT_PRSTATUS, &(trace->iov));
+	if (trace->iov.iov_len == 68)
+	{
+		if (trace->arch == 64)
+		{
+			trace->ch_arch = 1;
+			trace->arch = 32;
+		}
+		ft_memcpy(&trace->regs32, &trace->regs64, sizeof(trace->regs32));
+	}
 	if (ptrace_ret == -1)
 	{
 		perror("getregset");
@@ -74,6 +74,11 @@ int	tracing(t_trace *trace)
 				display_ret_syscall_32(trace->sys.ret, trace->regs32.eax);
 			else
 				display_ret_syscall_64(trace->sys.ret, trace->regs64.rax);
+		}
+		if (trace->ch_arch)
+		{
+			ft_dprintf(2, "ft_strace: [ Process PID=%d runs in %d bit mode. ]\n", trace->pid, trace->arch);
+			trace->ch_arch = 0;
 		}
 		get_memory(trace);
 		trace->sys = get_syscall(trace);

@@ -49,7 +49,6 @@ typedef struct user_regs_struct64
   unsigned long gs;
 }				t_regs_64;
 
-/*
 typedef struct user_regs_struct32
 {
   unsigned int ebx;
@@ -69,18 +68,6 @@ typedef struct user_regs_struct32
   unsigned int eflags;
   unsigned int esp;
   unsigned int xss;
-}				t_regs_32;
-*/
-
-typedef struct user_regs_struct32
-{
-	int ebx, ecx, edx, esi, edi, ebp, eax;
-	unsigned short ds, __ds, es, __es;
-	unsigned short fs, __fs, gs, __gs;
-	int orig_eax, eip;
-	unsigned short cs, __cs;
-	int eflags, esp;
-	unsigned short ss, __ss;
 }				t_regs_32;
 
 typedef struct s_trace

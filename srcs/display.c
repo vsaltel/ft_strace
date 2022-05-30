@@ -50,17 +50,21 @@ static void	print_escaped_str(char *str)
 
 	if (trace.arch == 32)
 	{
-		if (trace.sys.code32 == 1 && trace.regs32.edx < len && trace.regs32.edx >= 0)
-			len = trace.regs32.edx;
-		else if ((trace.sys.code32 == 3 || trace.sys.code32 == 180) && trace.regs32.eax < len && trace.regs32.eax >= 0)
-			len = trace.regs32.eax;
+		if (trace.sys.code32 == 1 && trace.regs32.edx < (unsigned int)len
+			&& (int)trace.regs32.edx >= 0)
+			len = (int)trace.regs32.edx;
+		else if ((trace.sys.code32 == 3 || trace.sys.code32 == 180) &&
+			trace.regs32.eax < (unsigned int)len && (int)trace.regs32.eax >= 0)
+			len = (int)trace.regs32.eax;
 	}
 	else
 	{
-		if (trace.sys.code64 == 1 && trace.regs64.rdx < (unsigned int)len && (int)trace.regs64.rdx >= 0)
-			len = (int)trace.regs64.rdx;
-		else if ((trace.sys.code64 == 0 || trace.sys.code64 == 17) && trace.regs64.rax < (unsigned int)len && (int)trace.regs64.rax >= 0)
-			len = (int)trace.regs64.rax;
+		if (trace.sys.code64 == 1 && trace.regs64.rdx < (unsigned long)len
+			&& (long)trace.regs64.rdx >= 0)
+			len = (long)trace.regs64.rdx;
+		else if ((trace.sys.code64 == 0 || trace.sys.code64 == 17) &&
+			trace.regs64.rax < (unsigned long)len && (long)trace.regs64.rax >= 0)
+			len = (long)trace.regs64.rax;
 	}
 	while (++i < len)
 	{

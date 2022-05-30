@@ -1,12 +1,6 @@
 #include "strace.h"
 #include "summary.h"
 
-//test
-static void	display_regs(t_trace *trace) 
-{
-	ft_printf("regs -> eax:%x ebx:%x, ecx:%x, edx:%x, esi:%x, edi:%x, ebp:%x\n", (int)trace->regs32.orig_eax, (int)trace->regs32.ebx, (int)trace->regs32.ecx, (int)trace->regs32.edx, (int)trace->regs32.esi, (int)trace->regs32.edi, (int)trace->regs32.ebp);
-}
-
 static int get_memory(t_trace *trace)
 {
 	int	ptrace_ret;

@@ -1,4 +1,5 @@
 *.swp
+bonus
 objs
 libft.a
 ft_strace

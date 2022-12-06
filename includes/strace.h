@@ -73,6 +73,7 @@ typedef struct user_regs_struct32
 typedef struct s_trace
 {
 	int						c;
+	int						h;
 	char					*name;
 	char					**args;
 	char					**env;
@@ -101,6 +102,7 @@ extern t_trace trace;
 void	init_trace(t_trace *trace, int argc, char **argv, char **env);
 t_syscall get_syscall(t_trace *trace);
 void	free_trace(t_trace *trace);
+void	usage(void);
 
 /*	program.c */
 int		launch_prog(t_trace *trace);

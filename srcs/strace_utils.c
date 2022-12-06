@@ -20,6 +20,11 @@ void	init_trace(t_trace *trace, int argc, char **argv, char **env)
 			trace->c = 1;
 			argv++;
 		}
+		if (!ft_strcmp(argv[1], "-h"))
+		{
+			trace->h = 1;
+			argv++;
+		}
 		trace->name = ft_strdup(argv[1]);
 		trace->args = &argv[1];
 	}
@@ -63,4 +68,11 @@ t_syscall get_syscall(t_trace *trace)
 			sys.code64 = cmp;
 	}
 	return (sys);
+}
+
+void    usage(void)
+{
+	ft_dprintf(2, "Usage: ft_strace [-ch] PROG [ARGS]\n\n\
+\t-c count time, calls, and errors for each syscall and report summary\n\
+\t-h this help\n");
 }

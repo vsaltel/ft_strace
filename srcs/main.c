@@ -8,13 +8,21 @@ int	main(int argc, char **argv, char **env)
 
 	if (argc < 2)
 	{
-		ft_dprintf(2, "ft_strace: must have PROG [ARGS]\n");
+		usage();
 		return (0);
 	}
 	init_trace(&trace, argc, argv, env);
-	if (!get_path(&trace))
-		return (1);
-	ret = launch_prog(&trace);
+	if (trace.h)
+	{
+		usage();
+		ret = 0;
+	}
+	else
+	{
+		if (!get_path(&trace))
+			return (1);
+		ret = launch_prog(&trace);
+	}
 	free_trace(&trace);
 	return (ret);
 }
